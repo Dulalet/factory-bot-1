@@ -10,6 +10,7 @@ from .utils import get_and_authenticate_user, create_user_account
 
 User = get_user_model()
 
+
 class AuthViewSet(viewsets.GenericViewSet):
     permission_classes = [AllowAny, ]
     serializer_class = serializers.EmptySerializer
