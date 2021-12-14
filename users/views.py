@@ -12,6 +12,7 @@ User = get_user_model()
 
 
 class AuthViewSet(viewsets.GenericViewSet):
+    queryset = ''
     permission_classes = [AllowAny, ]
     serializer_class = serializers.EmptySerializer
     serializer_classes = {
@@ -52,10 +53,15 @@ class AuthViewSet(viewsets.GenericViewSet):
 
     @action(methods=['GET', ], detail=False, permission_classes=[IsAuthenticated, ])
     def get_user(self, request):
-        # user = Token.objects.get(key=request.auth).user
         user = request.user
         data = serializers.AuthUserSerializer(user).data
         return Response(data=data, status=status.HTTP_200_OK)
+
+    @action(methods=['GET', ], detail=False, permission_classes=[IsAuthenticated, ])
+    def get_token(self, request):
+        user = request.user
+        data = serializers.AuthUserSerializer(user).data
+        return Response(data=data['auth_token'], status=status.HTTP_200_OK)
 
     def get_serializer_class(self):
         if not isinstance(self.serializer_classes, dict):
