@@ -12,7 +12,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 
 def start(update: Update, context: CallbackContext):
-    context.bot.send_message(chat_id=update.effective_chat.id, text='Please send your token here. URL: ')
+    context.bot.send_message(chat_id=update.effective_chat.id, text='please send me your token')
 
 
 def receive_token(update: Update, context: CallbackContext):
