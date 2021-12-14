@@ -2,13 +2,11 @@
 from django.contrib.auth.models import User
 from telegram import Update
 from telegram.ext import Updater, CallbackContext, CommandHandler, MessageHandler, Filters
-import os
 import logging
 
 from bot.bot_settings import BOT_API_TOKEN
 from user_messages.models import Chat
 
-PORT = int(os.environ.get('PORT', 5000))
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -34,24 +32,18 @@ def receive_token(update: Update, context: CallbackContext):
         logging.warning('user with the provided token does not exist')
 
 
-def main():
-    updater = Updater(token=BOT_API_TOKEN)
-    dispatcher = updater.dispatcher
-
-    start_handler = CommandHandler('start', start)
-    dispatcher.add_handler(start_handler)
-
-    token_handler = MessageHandler(Filters.text & (~Filters.command), receive_token)
-    dispatcher.add_handler(token_handler)
-
-    # updater.start_polling()
-    updater.start_webhook(listen="0.0.0.0",
-                          port=int(PORT),
-                          url_path=BOT_API_TOKEN)
-    updater.bot.setWebhook('https://factory-bot-1.herokuapp.com/' + BOT_API_TOKEN)
-
-    updater.idle()
+updater = Updater(token=BOT_API_TOKEN)
+dispatcher = updater.dispatcher
 
 
-if __name__ == '__main__':
-    main()
+
+start_handler = CommandHandler('start', start)
+dispatcher.add_handler(start_handler)
+
+
+
+
+token_handler = MessageHandler(Filters.text & (~Filters.command), receive_token)
+dispatcher.add_handler(token_handler)
+
+updater.start_polling()
