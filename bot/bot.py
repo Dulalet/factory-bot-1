@@ -35,13 +35,8 @@ def receive_token(update: Update, context: CallbackContext):
 updater = Updater(token=BOT_API_TOKEN)
 dispatcher = updater.dispatcher
 
-
-
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
-
-
-
 
 token_handler = MessageHandler(Filters.text & (~Filters.command), receive_token)
 dispatcher.add_handler(token_handler)
