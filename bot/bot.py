@@ -2,23 +2,19 @@
 from django.contrib.auth.models import User
 from telegram import Update
 from telegram.ext import Updater, CallbackContext, CommandHandler, MessageHandler, Filters
+import os
 import logging
 
 from bot.bot_settings import BOT_API_TOKEN
 from user_messages.models import Chat
 
-updater = Updater(token=BOT_API_TOKEN)
-dispatcher = updater.dispatcher
+PORT = int(os.environ.get('PORT', 5000))
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 
 def start(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id, text='Please send your token here. URL: ')
-
-
-start_handler = CommandHandler('start', start)
-dispatcher.add_handler(start_handler)
 
 
 def receive_token(update: Update, context: CallbackContext):
@@ -38,7 +34,24 @@ def receive_token(update: Update, context: CallbackContext):
         logging.warning('user with the provided token does not exist')
 
 
-token_handler = MessageHandler(Filters.text & (~Filters.command), receive_token)
-dispatcher.add_handler(token_handler)
+def main():
+    updater = Updater(token=BOT_API_TOKEN)
+    dispatcher = updater.dispatcher
 
-updater.start_polling()
+    start_handler = CommandHandler('start', start)
+    dispatcher.add_handler(start_handler)
+
+    token_handler = MessageHandler(Filters.text & (~Filters.command), receive_token)
+    dispatcher.add_handler(token_handler)
+
+    # updater.start_polling()
+    updater.start_webhook(listen="0.0.0.0",
+                          port=int(PORT),
+                          url_path=BOT_API_TOKEN)
+    updater.bot.setWebhook('https://factory-bot-1.herokuapp.com/' + BOT_API_TOKEN)
+
+    updater.idle()
+
+
+if __name__ == '__main__':
+    main()
