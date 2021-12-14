@@ -4,6 +4,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from . import serializers
 from .utils import get_and_authenticate_user, create_user_account
@@ -52,13 +53,9 @@ class AuthViewSet(viewsets.GenericViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['GET', ], detail=False, permission_classes=[IsAuthenticated, ])
-    def get_user(self, request):
-        user = request.user
-        data = serializers.AuthUserSerializer(user).data
-        return Response(data=data, status=status.HTTP_200_OK)
-
-    @action(methods=['GET', ], detail=False, permission_classes=[IsAuthenticated, ])
     def get_token(self, request):
+        if not request.user.username:
+            return Response('Provide authentication credentials', HTTP_400_BAD_REQUEST)
         user = request.user
         data = serializers.AuthUserSerializer(user).data
         return Response(data=data['auth_token'], status=status.HTTP_200_OK)
